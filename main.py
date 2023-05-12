@@ -1,50 +1,4 @@
-#i changed you movement system so that each room had its own block of code.
-#this allows you to easily control where the player can move and do other event like picking up items or attacking
-#the code I made is:
-#  if "room" + str(room_number) == "room0": 
-#     if player_input == "north":
-#        room_number = 0
-#        print(Room0)
-#
-#     if player_input == "west":
-#        room_number = 0
-#        print(Room0)
-#
-#     if player_input == "east":
-#        room_number = 0
-#        print(Room0)
-#
-#     if player_input == "south":
-#        room_number = 0
-#        print(Room0)
-#
-#     if player_input == "pickup":
-#        print("you cannot pick anything up here.")
-#
-#     if player_input == "attack":
-#        print("you cannot attack here")
-#
-#
-#I added some new variable (mostly for event like picking things up or talking to people) and one of the is the room_number.
-#The room_number variable is an interger that controls what room you are in.
-#it tests what room you are in by concatonating the string "room" and the room_number as a string to see if it matches a room in the code
-#
-#In the if statement, it tests for 1 of 6 inputs: north, south, east, west, pickup, or attack
-#If any one of those are selected it will run the code in that inputs if statement.
-#for the movement, it usually changes the room number to the room number of the room your going into then print the text for that room and move on.
-#Sometimes, though, there is an event. When that happened I made a variable to test if the event has happened or not.
-#this just adds another if statement in the input if statement section to test if the event has happened; if it hasn't it runs it, if it has it doesn't run it.
-#For some of these events you will need to add code to pick things up and add them to the inventory of the player.
-#Other ones, like fighting, you will also have to implement
-#
-#The pickup and fight inputs usually give the same response of not being able to do it.
-#change what you want them to do by just replacing the default print command I put.
-#
-#I also left several comments throughout the code that show where you need add certain thing
-#
-#lastly, I made you loop a while True: loop that runs forever, to exit the game at anytime input "break" and the game will end.
-#
-#Text me if you have any other questions
+import pickle
 
 def main():
 #BEFORE GAME START
@@ -52,54 +6,60 @@ def main():
     inventory = ["", ""]
     player_position = ""
     item1 = "Samurai_katana"
+    item2 = "Baseball Bat"
+    item3 = "Shotgun"
+    item4 = "Key"
     item1_collected = False
     Room5_zombiesgone = False
+    Room12_zombiesgone = False
+    Room19_zombiesgone = False
+    Room27_unlocked = False
+   
 
-    controls = ("CONTROLS:\n\nWEST\nEAST\nNORTH\nSOUTH\nPICKUP\nATTACK\n")
+    controls = ("CONTROLS:\n\nWEST\nEAST\nNORTH\nSOUTH\nPICKUP\nATTACK/USE\nHELP\n")
 
-    Room1 = ("You look around from the car you took to the mall, there are 4 ways you can go. Hallways to your north, west, and east. And south is the exit.")
-    Room2 = ("As you enter the room you see it used to be a cafe of some kind, you try one of the machines but it doesn't work. Dang. You decide to get back to your job and see a hallway to the west")
-    Room3 = ("You walk into a crossroads, the south is taken out so no going that way. The west leads to an apple store which you're guessing is abandoned, and north leads you to an abandoned office.")
-    Room4 = ("As you enter the apple store you see it has already been looted, the technology wouldn't have been any help since it would have been dead. To your west you see an opening to a pretty large room.")
-    Room5z = ("As you enter the doorway to your west you see a horde of zombies, you know a few bullets will make them scatter and allow you to move on, but for now you can't go west until you get those bullets")
-    Room5noz = ("You enter the doorway into a large area where you had scattered zombies earlier.")
-    Room6 = ("With the zombies scattered you continue through the large area but see nothing of interest other than a door to your north.")
-    Room7_weaponnotcollected = ("As you enter the room you don't see anything, but out of the corner of your eye you see a baseball bat in a barrel")
-    Room7 = ("When you enter the room you see nothing of value.")
-    Room8_weaponnotcollected = ("You decide to go north into the office building, and you manage to find a samurai katana. The only way you can go from here is north out the back door, our south through the way you just came.")
-    Room8 = ("You decide to go north into the office building. The only way you can go from here is north out the back door, our south through the way you just came.")
-    Room9z = ("As you leave through the backdoor, you see a disturbing sight. There is a horde of zombies just ahead of you, but you can scatter them with a couple of bullets.")
-    Room9noz = ("You enter a deserted hallway you scattered zombies in.")
-    Room10 = ("As you go east from your car, you see a long, uninteresting hallway that looks like it goes on for a while.")
-    Room11 = ("The long, boring hallway continues on")
-    Room12z = ("As you are walking down the long, boring hallway you eventually come upon a small horde of zombies, you can kill them all with some bullets.")
-    Room12noz = ("The long, boring hallway continues on")
-    Room13 = ("Now that there aren't any zombies here, you see the boring hallway finally comes to an end in a room just east from where you are, which opens into a hunting store.")
-    Room14 = ("You don't see any bullets in the hunting store, but you see a key which looks like it could open a locked door.")
-    Room15 = ("As you enter the room from the hallway, you see trash scattered around the area, and traces of zombies. You don't see any zombies near you but it is clear they were here at one point. The building continues north")
-    Room16 = ("As you trudge through the long building, you finally come across a door. When you open it you see it opens into something into some other area to your north")
-    Room17 = ("When you open the door, you come upon a massive area, with beautiful statues now covered in moss, you guess this is the center of the mall. There are paths in all directions.")
-    Room18 = ("This hallway looks like it once was a beautiful piece of architecture, but now there is greenery covering all of it. It makes it beautiful in a weird way. The hallway continues west or east")
-    Room19 = ("Since the zombies are scattered, this area is trashed with junk thrown everywhere. This room looks like it could have been a food court in the past. There are hallways south, west, and east.")
-    Room20 = ("As you continue going west, you can hear some noises coming from a building just west from where you are.")
-    Room21_isaacnotsaved = (f"As you enter the store, you see your friend Isaac, '{player_name}! I thought you weren't gonna find me, you must've dealt with the zombies since you made it here. I am gonna go to the car and place my supplies there, see you there!' With Isaac leaving, you see nothing else in this room.")
-    Room21_isaacsaved = ("As you enter the room, you see some stray rats scrambling around, how did these rats cause all this ruckus?")
-    Room22_weaponnotcollected = ("You decide to go east, and as you are walking across the hallway, you see a shotgun to the right. The hallway continues on East")
-    Room22 = ("You decide to go east as the hallway continues")
-    Room23 = ("You enter a weird art store, there aren't any paintings that catch your attention, the art room continues east")
-    Room24_normal = ("You continue going down the art store until you come to a dead end, with a picture of a man smiling at you, he looks friendly.")
-    Room24_trueending = ("You continue going down the art store until you come to the end, where you see a picture of a man smiling at you, he looks friendly.")
-    Room25 = ("You decide to go north and come up to an escalator. Well it used to be, now since there isn't power it is basically just a staircase. It continues north.")
-    Room26 = ("As you ascend the stairs, they seemed to go on forever. Once you reach the top, to your north you see a locked door. You see that it needs a key to be opened")
-    Room27_nokey = ("You can't continue until you find a way through the locked door")
-    Room27 = ("As you open the door you come across a beautiful room, untouched by nature with hallways north, east, and west. The north seems to head to a boys bathroom, and the east is a girls bathroom.")
-    Room28_weaponnotcollected = ("As you enter the room, you realise this is a police department for the mall, you see a baton hanging up on the wall")
-    Room28_weaponcollected = ("When you enter the room, you realise this is a police department for the mall.")
-    Room29 = ("When you enter the girls bathroom, the only thing there remotely close to a girl are the rats running around.")
-    Room30_tazznotsaved = (f"As you enter the bathroom, you hear a massive fart and plop. 'Is that you Tazz?' you call out. All the sudden a stall opens and you see Tazz come out of it. '{player_name}! You got me at a bad time but I was stuck here and needed to do my thing yknow. I actually gathered some food for the colony, I will meet you at the car!'")
-    Room30_tazzsaved = (f"You enter the boys bathroom and hear a disfunctional toilet constantly flushing, how is that thing still working?")
-    Zombies_in_room = ("You can't go this way with zombies right there!")
-    Locked_door_room = ("You can't continue until you find a way through this door!")
+    Room1 = ("\nYou look around from the car you took to the mall, there are 4 ways you can go. Hallways to your north, west, and east. And south is the exit.")
+    Room2 = ("\nAs you enter the room you see it used to be a cafe of some kind, you try one of the machines but it doesn't work. Dang. You decide to get back to your job and see a hallway to the west")
+    Room3 = ("\nYou walk into a crossroads, the south is taken out so no going that way. The west leads to an apple store which you're guessing is abandoned, and north leads you to an abandoned office.")
+    Room4 = ("\nAs you enter the apple store you see it has already been looted, the technology wouldn't have been any help since it would have been dead. To your west you see an opening to a pretty large room.")
+    Room5z = ("\nAs you enter the doorway to your west you see a horde of zombies, with this horde a very sharp weapon would scatter them, but for now you can't go west until you scatter them")
+    Room5noz = ("\nYou enter the doorway into a large area where you had scattered zombies earlier.")
+    Room6 = ("\nWith the zombies scattered you continue through the large area but see nothing of interest other than a door to your north.")
+    Room7_weaponnotcollected = ("\nAs you enter the room you don't see anything, but out of the corner of your eye you see a baseball bat in a barrel")
+    Room7 = ("\nWhen you enter the room you see nothing of value.")
+    Room8_weaponnotcollected = ("\nYou decide to go north into the office building, and you manage to find a samurai katana. The only way you can go from here is north out the back door, our south through the way you just came.")
+    Room8 = ("\nYou decide to go north into the office building. The only way you can go from here is north out the back door, our south through the way you just came.")
+    Room9z = ("\nAs you leave through the backdoor, you see a disturbing sight. There is a horde of zombies just ahead of you, this is a small horde and will need a blunt object to move them.")
+    Room9noz = ("\nYou enter a deserted hallway you scattered zombies in.")
+    Room10 = ("\nAs you go east from your car, you see a long, uninteresting hallway that looks like it goes on for a while.")
+    Room11 = ("\nThe long, boring hallway continues on")
+    Room12z = ("\nAs you are walking down the long, boring hallway you eventually come upon a massive horde of zombies, you can kill them all with some a powerful weapon like a shotgun.")
+    Room12noz = ("\nThe long, boring hallway continues on")
+    Room13 = ("\nNow that there aren't any zombies here, you see the boring hallway finally comes to an end in a room just east from where you are, which opens into a hunting store.")
+    Room14 = ("\nYou don't see any bullets in the hunting store, but you see a key which looks like it could open a locked door.")
+    Room15 = ("\nAs you enter the room from the hallway, you see trash scattered around the area, and traces of zombies. You don't see any zombies near you but it is clear they were here at one point. The building continues north")
+    Room16 = ("\nAs you trudge through the long building, you finally come across a door. When you open it you see it opens into something into some other area to your north")
+    Room17 = ("\nWhen you open the door, you come upon a massive area, with beautiful statues now covered in moss, you guess this is the center of the mall. There are paths in all directions.")
+    Room18 = ("\nThis hallway looks like it once was a beautiful piece of architecture, but now there is greenery covering all of it. It makes it beautiful in a weird way. The hallway continues west or east")
+    Room19 = ("\nSince the zombies are scattered, this area is trashed with junk thrown everywhere. This room looks like it could have been a food court in the past. There are hallways south, west, and east.")
+    Room20 = ("\nAs you continue enter the room, you can hear some noises coming from a building just west from where you are.")
+    Room21_isaacnotsaved = (f"\nAs you enter the store, you see your friend Isaac, '{player_name}! I thought you weren't gonna find me, you must've dealt with the zombies since you made it here. I am gonna go to the car and place my supplies there, see you there!' With Isaac leaving, you see nothing else in this room.")
+    Room21_isaacsaved = ("\nAs you enter the room, you see some stray rats scrambling around, how did these rats cause all this ruckus?")
+    Room22_weaponnotcollected = ("\nYou decide to go east, and as you are walking across the hallway, you see a shotgun to the right. The hallway continues on East")
+    Room22 = ("\nYou decide to go east as the hallway continues")
+    Room23 = ("\nYou enter a weird art store, there aren't any paintings that catch your attention, the art room continues east")
+    Room24_normal = ("\nYou continue going down the art store until you come to a dead end, with a picture of a man smiling at you, he looks friendly.")
+    Room24_trueending = ("\nYou continue going down the art store until you come to the end, where you see a picture of a man smiling at you, he looks friendly.")
+    Room25 = ("\nYou decide to go north and come up to an escalator. Well it used to be, now since there isn't power it is basically just a staircase. It continues north.")
+    Room26 = ("\nAs you ascend the stairs, they seemed to go on forever. Once you reach the top, to your north you see a locked door. You see that it needs a key to be opened")
+    Room27_nokey = ("\nYou can't continue until you find a way through the locked door")
+    Room27 = ("\nAs you open the door you come across a beautiful room, untouched by nature with hallways north, east, and west. The north seems to head to a boys bathroom, and the east is a girls bathroom.")
+    Room28 = ("\nWhen you enter the room, you realise this is a police department for the mall. You don't find anything of value.")
+    Room29 = ("\nWhen you enter the girls bathroom, the only thing there remotely close to a girl are the rats running around.")
+    Room30_tazznotsaved = (f"\nAs you enter the bathroom, you hear a massive fart and plop. 'Is that you Tazz?' you call out. All the sudden a stall opens and you see Tazz come out of it. '{player_name}! You got me at a bad time but I was stuck here and needed to do my thing yknow. I actually gathered some food for the colony, I will meet you at the car!'")
+    Room30_tazzsaved = ("\nYou enter the boys bathroom and hear a disfunctional toilet constantly flushing, how is that thing still working?")
+    Zombies_in_room = ("\nYou can't go this way with zombies right there!")
+    Locked_door_room = ("\nYou can't continue until you find a way through this door!")
 #GAME START
 
     print("After some Chinese scientist had a failed experiment, zombies began to appear all throughout the world and cause a meltdown of humanity")
@@ -112,21 +72,168 @@ def main():
     player_input = ""
 
     room_number = 1
+    roomNoZ = False
     room9NoZ = False
     room12NoZ = False
-    issacSaved = False
+    isaacSaved = False
     tazzSaved = False
     shotgunPickedUp = False
     keyPickedUp = False
-    batonPickedUp = False
+    baseballbatPickedUp = False
+    katanaPickedUp = False
+    save = [room9NoZ, room12NoZ, isaacSaved, tazzSaved, shotgunPickedUp, keyPickedUp, baseballbatPickedUp, katanaPickedUp, Room5_zombiesgone, Room12_zombiesgone, Room19_zombiesgone, Room27_unlocked]
+    ending = False
+    ending1 = False
+    ending2 = False
+    ending3 = False
+    ending4 = False
+    true_ending = False
 
     while True:
+        if ending == True:
+            item1_collected = False
+            Room5_zombiesgone = False
+            Room12_zombiesgone = False
+            Room19_zombiesgone = False
+            Room27_unlocked = False
+            room9NoZ = False
+            room12NoZ = False
+            isaacSaved = False
+            tazzSaved = False
+            shotgunPickedUp = False
+            keyPickedUp = False
+            baseballbatPickedUp = False
+            katanaPickedUp = False
+            room_number = 1
+            ending = False
+        
         player_input = ""
-        player_input = input("What do you want to do?\n").lower()
-        print("room" + str(room_number))
+        player_input = input("\nWhat do you want to do?\n").lower()
 
-        if player_input == "break":
+
+
+
+########################################################################################################################################
+
+
+
+        if player_input == "save":
+
+            #this creates a text file name "save.txt". The "w" means that you are writing to it
+            f = open("save.txt", "w")
+            f.write("") #this is creating the file/clearing it if it already exists
+            f.close() #closes the file
+
+            f = open("save.txt", "a") #opens the "save.txt" file, the "a" means that you are appending to it
+            for i in range(len(save)): #for loop going through the save list
+                  f.write(str(save[i]) + ",") #systematically saving each value in the save list to "save.txt" with a comma after it
+
+            f.close() #close the file
+
+        if player_input == "load":
+            f = open("save.txt", "r") #opens "save.txt", the "r" means that you are reading the file
+            line = f.readline() #saves the first line of "save.txt" as a variable
+            f.close() #close the file
+
+            saveLoad = line.split(",") #.split() save the line we loaded from "save.txt" into the save variable but splits it at each comma; 1,2,3 would become ["1","2","3"]
+
+            #the following code just assigns each variable true or false depending on what value saveLoad[x] was
+            if saveLoad[0] == "True":
+                  room9NoZ = True
+            else:
+                  room9NoZ = False
+            
+            if saveLoad[1] == "True":
+                  room12NoZ = True
+            else:
+                  room12NoZ = False
+            
+            if saveLoad[2] == "True":
+                  isaacSaved = True
+            else:
+                  isaacSaved = False
+
+            if saveLoad[3] == "True":
+                  tazzSaved = True
+            else:
+                  tazzSaved = False
+
+            if saveLoad[4] == "True":
+                  shotgunPickedUp = True
+            else:
+                  shotgunPickedUp = False
+
+            if saveLoad[5] == "True":
+                  keyPickedUp = True
+            else:
+                  keyPickedUp = False
+
+            if saveLoad[6] == "True":
+                  baseballbatPickedUp = True
+            else:
+                  baseballbatPickedUp = False
+
+            if saveLoad[7] == "True":
+                  katanaPickedUp = True
+            else:
+                  katanaPickedUp = False
+
+            if saveLoad[8] == "True":
+                  Room5_zombiesgone = True
+            else:
+                  Room5_zombiesgone = False
+
+            if saveLoad[9] == "True":
+                  Room12_zombiesgone = True
+            else:
+                  Room12_zombiesgone = False
+
+            if saveLoad[10] == "True":
+                  Room19_zombiesgone = True
+            else:
+                  Room19_zombiesgone = False
+
+            if saveLoad[11] == "True":
+                  Room27_unlocked = True
+            else:
+                  Room27_unlocked = False
+
+
+
+##########################################################################################################################################
+
+
+
+
+        if player_input == "quit":
               break
+        
+        if player_input == "controls":
+              print(controls)
+        
+        if player_input == "command.giveall":
+              inventory.append(item1)
+              katanaPickedUp = True
+              inventory.append(item2)
+              baseballbatPickedUp = True
+              inventory.append(item3)
+              shotgunPickedUp = True
+              inventory.append(item4)
+              keyPickedUp = True
+              print("Given every weapon in the game.")
+      
+        if player_input == "command.allendings_complete":
+              ending1 = True
+              ending2 = True
+              ending3 = True
+              ending4 = True
+              print("Given every ending except the true ending!")
+
+        if player_input == "help":
+              print("Ending 1: Betrayal\nEnding 2: Betrayal of Tazz\nEnding 3: Betrayal of Isaac\nEnding 4: Good Ending\nEnding 5: True Ending (hint, you need every other ending to get this one!)")
+
+        if player_input == "inventory":
+              print(f"{inventory}")
 
         if "room" + str(room_number) == "room1": #Room 1
                 if player_input == "north":
@@ -138,8 +245,26 @@ def main():
                 if player_input == "east":
                       room_number = 10
                       print(Room10)
-                if player_input == "south":
-                    print("you cannot go this way.")
+                if player_input == "south" and isaacSaved == False and tazzSaved == False:
+                    print("You decide to leave without either of your friends. You arrive back at the colony and tell them that Tazz and Isaac got captured by zombies. You will never live down the guilt you feel now by leaving your friends behind.\n")
+                    print("Congrats! You got Ending 1 of 5; Betrayal.")
+                    ending1 = True
+                    ending = True
+                if player_input == "south" and isaacSaved == True and tazzSaved == False:
+                    print("As you are entering the car, Isaac asks 'hey, what about Tazz?' You told him that you were too late to rescue him and he died. Isaac gave a sad expression but said that you should leave as soon as you can. You can never live down the guilt of lying to your best friend and deserting the other.\n")
+                    print("Congrats! You got Ending 2 of 5; Tazz Deserted")
+                    ending2 = True
+                    ending = True
+                if player_input == "south" and isaacSaved == False and tazzSaved == True:
+                    print("As you start to get in the car, Tazz asks 'Hey, what about Isaac? Are we just gonna leave him?'\nYou told him that Isaac had died by the time you had got there and that you needed to go. Tazz agreed and you both left. You will never live down the guilt of leaving your friend behind.\n")
+                    print("Congrats! You got Ending 3 out of 5; Betrayal of Isaac")
+                    ending3 = True
+                    ending = True
+                if player_input == "south" and isaacSaved == True and tazzSaved == True:
+                      print("As you arrive back to the car, you see both of your best friends there. You get a good feeling knowing that you saved both of their lives. 'Come on guys, lets get out of here and back to the colony.' Tazz and Isaac agree and you three all head out back to the colony and you still have both of your best friends.")
+                      print("Congrats! You got Ending 4 out of 5; Good Ending")
+                      ending4 = True
+                      ending = True
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
                 if player_input == "attack":
@@ -164,9 +289,9 @@ def main():
         elif "room" + str(room_number) == "room3": #Room 3
                 if player_input == "north":
                     room_number = 8
-                    if item1_collected:
+                    if katanaPickedUp == True:
                         print(Room8)
-                    if not(item1_collected):
+                    if katanaPickedUp == False:
                           print(Room8_weaponnotcollected)
                 if player_input == "west":
                       room_number = 4
@@ -178,7 +303,7 @@ def main():
                     #room_number = 0
                     print("you cannot go this way.")
                 if player_input == "pickup":
-                      pass #add code here to pick up the baseball bat
+                      print("you cannot pickup anything here.")
                 if player_input == "attack":
                       print("you cannot attack here")
                       
@@ -191,7 +316,7 @@ def main():
                       room_number = 5
                       if Room5_zombiesgone == False: #this will push you back to room 4 if the zombies are still there; there is currently no way to kill the zombies. I didn't know how you wanted to do that so I'll let you do it.
                         print(Room5z)
-                        room_number = 4
+                        room_number = 5
                       elif Room5_zombiesgone == True:
                         print(Room5noz)  
                 if player_input == "east":
@@ -209,19 +334,26 @@ def main():
                 if player_input == "north":
                     #room_number = 8
                     print("You cannot go this way")
-                if player_input == "west":
+                if player_input == "west" and Room5_zombiesgone == False:
+                      room_number = 5     
+                      print("You can't progress this way until you deal with the zombies.")
+                if player_input == "west" and Room5_zombiesgone == True:
                       room_number = 6
-                      print(Room4)
+                      print(Room6)
                 if player_input == "east":
                       room_number = 4
-                      print(Room2)
+                      print(Room4)
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
-                if player_input == "attack":
-                      print("you cannot attack here")
+                if player_input == "attack" and item1 in inventory:
+                      print("You rush at the zombies with your katana, not knowing how to handle one your form isn't great. But you kill a couple zombies and the rest scatter, allowing you to move on.")
+                      Room5_zombiesgone = True
+                if player_input == "attack" and item1 not in inventory:
+                      print("You don't have the correct weapon to attack these zombies.")
+                      
                 
         elif "room" + str(room_number) == "room6": #Room 6
                 if player_input == "north":
@@ -234,8 +366,8 @@ def main():
                       #room_number = 6
                       print("you cannot go this way.")
                 if player_input == "east":
-                      room_number = 4
-                      print(Room2)
+                      room_number = 5
+                      print(Room5noz)
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
@@ -257,8 +389,12 @@ def main():
                 if player_input == "south":
                     room_number = 6
                     print(Room6)
-                if player_input == "pickup":
-                      print("you cannot pick anything up here.")
+                if player_input == "pickup" and baseballbatPickedUp == True:
+                      print("You already picked up the item in this room.")
+                if player_input == "pickup" and baseballbatPickedUp == False:
+                      print("As you walk over to the baseball bat, you pick it up. It is old and shoddy, but looks like it will get the job done.")
+                      baseballbatPickedUp = True
+                      inventory.append(item2)
                 if player_input == "attack":
                       print("you cannot attack here")
         
@@ -267,7 +403,6 @@ def main():
                     room_number = 9
                     if room9NoZ == False: #from how the text went, i assumed you wouldn't actually have to fight the zombies so I just made it a one time event with the room9NoZ bool. if it is true the event wont happen again
                         print(Room9z)
-                        room9Noz = True
                     elif room9NoZ == True:
                           print(Room9noz)
                 if player_input == "west":
@@ -279,15 +414,21 @@ def main():
                 if player_input == "south":
                     room_number = 3
                     print(Room3)
-                if player_input == "pickup":
-                      print("you cannot pick anything up here.")
+                if player_input == "pickup" and katanaPickedUp == True:
+                      print("You already picked up the item in this room.")
+                if player_input == "pickup" and katanaPickedUp == False:
+                      print("As you walk up to the barrel with the katana, you grab it out of the barrel, it shines brightly in the room")
+                      katanaPickedUp = True
+                      inventory.append(item1)
                 if player_input == "attack":
                       print("you cannot attack here")
 
         elif "room" + str(room_number) == "room9": #Room 9
-                if player_input == "north":
+                if player_input == "north" and Room19_zombiesgone == True:
                     room_number = 19
                     print(Room19)
+                if player_input == "north" and Room19_zombiesgone == False:
+                      print("You can't go this way until you deal with these zombies")
                 if player_input == "west":
                       #room_number = 0
                       print("You cannot go this way.")
@@ -299,8 +440,12 @@ def main():
                     print(Room8)
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
-                if player_input == "attack":
-                      print("you cannot attack here")
+                if player_input == "attack" and item2 in inventory:
+                      print("You rush the zombies with your bat, and quickly take off some of their heads, forcing them to scatter. The path is now clear")
+                      Room19_zombiesgone = True
+                      Room9noz = True
+                if player_input == "attack" and item2 not in inventory:
+                      print("You don't have the correct weapons to deal with these zombies.")
 
         elif "room" + str(room_number) == "room10": #Room 10
                 if player_input == "north":
@@ -348,16 +493,21 @@ def main():
                 if player_input == "west":
                       room_number = 11
                       print(Room11)
-                if player_input == "east":
+                if player_input == "east" and Room12_zombiesgone == True:
                       room_number = 13
                       print(Room13)
+                if player_input == "east" and Room12_zombiesgone == False:
+                      print("You can't go this way until you deal with the zombies")
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
-                if player_input == "attack":
-                      print("you cannot attack here")
+                if player_input == "attack" and item3 in inventory:
+                      print("You cock your shotgun and shoot at the zombies, wiping out hordes of them with a few shots. After seeing so many fall they scatter and run away")
+                      Room12_zombiesgone = True
+                if player_input == "attack" and item3 not in inventory:
+                      print("You don't have the correct weapons to attack.")
         
         elif "room" + str(room_number) == "room13": #Room 13
                 if player_input == "north":
@@ -392,7 +542,8 @@ def main():
                     print("you cannot go this way.")
                 if player_input == "pickup":
                       keyPickedUp = True #this code allows the player to pick up the key - also make sure to add code to add the weapon to the player inventory
-                      print("You picked up the key")
+                      print("You picked up the key, it looks like it goes to a locked door.")
+                      inventory.append(item4)
                 if player_input == "attack":
                       print("you cannot attack here")
 
@@ -426,7 +577,7 @@ def main():
                       print("You cannot go this way.")
                 if player_input == "south":
                     room_number = 15
-                    print("you cannot go this way.")
+                    print(Room15)
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
                 if player_input == "attack":
@@ -457,7 +608,9 @@ def main():
                 if player_input == "north":
                     #room_number = 8
                     print("You cannot go this way")
-                if player_input == "west":
+                if player_input == "west" and room9NoZ == False:
+                      print("There are zombies blocking the road! You need a blunt object to pass these zombies.")
+                if player_input == "west" and room9NoZ == True:
                       room_number = 19
                       print(Room19)
                 if player_input == "east":
@@ -468,8 +621,12 @@ def main():
                     print("you cannot go this way.")
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
-                if player_input == "attack":
-                      print("you cannot attack here")
+                if player_input == "attack" and item2 in inventory:
+                      print("You rush the zombies with the baseball bat, quickly taking a few of their heads off. After this destruction the zombies flee in many directions, opening the way forward.")
+                      room9Noz = True
+                      Room19_zombiesgone = True
+                if player_input == "attack" and item2 not in inventory:
+                      print("You don't have the correct weapon to defeat the zombies!")
 
         elif "room" + str(room_number) == "room19": #Room 19 something I noticed about this room is that you have to fight zombies when coming from the south but can go straight through when coming from the east, you can fix this if you want; just an observation.
                 if player_input == "north":
@@ -495,13 +652,14 @@ def main():
                     print("You cannot go this way")
                 if player_input == "west":
                       room_number = 21
-                      if issacSaved == False: #another single time event using a boolen
-                        print(Room21_isaacnotsaved)
-                      if issacSaved == True:
+                      if isaacSaved == True:
                             print(Room21_isaacsaved)
+                      if isaacSaved == False: #another single time event using a boolen
+                        print(Room21_isaacnotsaved)
+                        isaacSaved = True
                 if player_input == "east":
-                      room_number = 4
-                      print(Room2)
+                      room_number = 19
+                      print(Room19_zombiesgone)
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
@@ -541,8 +699,12 @@ def main():
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
-                if player_input == "pickup":
-                      print("you cannot pick anything up here.")
+                if player_input == "pickup" and shotgunPickedUp == True:
+                      print("You already picked up the item in this room.")
+                if player_input == "pickup" and shotgunPickedUp == False:
+                      print("You walk over and pickup the shotgun. It looks pretty old but it looks like it is still working.")
+                      shotgunPickedUp = True
+                      inventory.append(item3)
                 if player_input == "attack":
                       print("you cannot attack here")
 
@@ -555,7 +717,9 @@ def main():
                       print(Room22)
                 if player_input == "east":
                       room_number = 24
-                      print(Room24_normal) #this says it has a normal room and an ending but they are both the same, im going to assume this isn't finished so I just put the normal room 24
+                      print(Room24_normal)
+                if player_input == "east" and ending1 == True and ending2 == True and ending3 == True and ending4 == True:
+                      print("As you enter the room, you see a painting at the end glowing very bright, it looks like a portal you can enter!\n") #this says it has a normal room and an ending but they are both the same, im going to assume this isn't finished so I just put the normal room 24
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
@@ -570,13 +734,25 @@ def main():
                     print("You cannot go this way")
                 if player_input == "west":
                       room_number = 23
-                      print(Room4)
-                if player_input == "east":
+                      print(Room23)
+                if player_input == "east" and ending1 == True and ending2 == True and ending3 == True and ending4 == True:
+                      print(f"As you step into the portal, you get blinded. You start to panic as you don't know what is going on until all the sudden you fall asleep.\nWhen you wake up you look around and you see a man standing in front of you. 'God?' you ask to the figure.\nThe figure would turn around and reveal himself to be Mr. Simonsen, your old programming teacher. 'Congrats {player_name}, you beat the simulation!' (type 'continue' to continue on with the dialogue)")
+                      if player_input == "continue":
+                              print("'Simulation?' you ask him. 'Yes, everything you see here is just a simulation to see what you would do during the apocalypse! Your input is greatly appreciated.' You look around and pinch yourself\nAll the sudden you wake up in a fully white room with a bunch of scientists looking at you.")
+                              print("Congrats! You have gotten Ending 5 of 5; True Ending")
+                              print("Thank you for playing!")
+                              break
+                if player_input == "east" and ending1 == False or ending2 == False or ending3 == False or ending4 == False:
                       #room_number = 0
                       print("You cannot go this way.")
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
+                if player_input == "continue" and ending1 == True and ending2 == True and ending3 == True and ending4 == True:
+                        print("'Simulation?' you ask him. 'Yes, everything you see here is just a simulation to see what you would do during the apocalypse! Your input is greatly appreciated.' You look around and pinch yourself\nAll the sudden you wake up in a fully white room with a bunch of scientists looking at you.\n")
+                        print("Congrats! You have gotten Ending 5 of 5; True Ending")
+                        print("Thank you for playing!")
+                        break
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
                 if player_input == "attack":
@@ -602,10 +778,10 @@ def main():
 
         elif "room" + str(room_number) == "room26": #Room 26
                 if player_input == "north":
-                    room_number = 27
-                    if keyPickedUp == False: #only lets the player in the locked door if they have the key
+                    if Room27_unlocked == False: #only lets the player in the locked door if they have the key
                           print(Room27_nokey)
-                    elif keyPickedUp == True:
+                    elif Room27_unlocked == True:
+                          room_number = 27
                           print(Room27)
                 if player_input == "west":
                       #room_number = 0
@@ -619,24 +795,27 @@ def main():
                 if player_input == "pickup":
                       print("you cannot pick anything up here.")
                 if player_input == "attack":
-                      print("you cannot attack here")
+                      print("You decide to use logic and try to kick the door down. Since it is rusted you take it down and continue on.")
+                      Room27_unlocked = True
+                if player_input == "use" and item4 in inventory:
+                      print("You use the key and successfully unlock the door allowing you to continue.")
+                      Room27_unlocked = True
+                  
 
         elif "room" + str(room_number) == "room27": #Room 27
                 if player_input == "north":
                     room_number = 30
-                    if tazzSaved == False: #one time event to pick up the baton
+                    if tazzSaved == True:      
+                          print(Room30_tazzsaved)                   
+                    elif tazzSaved == False: #one time event to pick up the baton
                           print(Room30_tazznotsaved)
-                    elif tazzSaved == True:      
-                          print(Room30_tazzsaved)
+                          tazzSaved = True
                 if player_input == "west":
                       room_number = 28
-                      if batonPickedUp == False:
-                            print(Room28_weaponnotcollected)
-                      elif batonPickedUp == True:
-                            print(Room28_weaponcollected)
+                      print(Room28)
                 if player_input == "east":
-                      room_number = 4
-                      print(Room2)
+                      room_number = 29
+                      print(Room29)
                 if player_input == "south":
                     #room_number = 0
                     print("you cannot go this way.")
@@ -698,7 +877,29 @@ def main():
                       print("you cannot pick anything up here.")
                 if player_input == "attack":
                       print("you cannot attack here")
+       
+      
+#go to 7
+
+#EXAMPLE OBJECT
+#class Example:
+     # def __init__(self, name, age):
+           # self.name = name
+            #self.age = age
+
+     # def greet(self):
+            #print(f"Hello, my name is {self.name} and I'm {self.age} years old.")
+
+#obj = Example("John", 30)
+
+#print(obj.name)
+#print(obj.age)
+
+#obj.greet()
+
+
+
+
 
 if __name__ == "__main__":
-        main()
-
+            main()
